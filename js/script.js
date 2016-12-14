@@ -1,5 +1,6 @@
 window.onload = function () {
 
+    // 兼容 IE 下 getElementsByClassName 不兼容
     if (!document.getElementsByClassName) {
         document.getElementsByClassName = function (cls) {
             var ret = [];
@@ -30,7 +31,7 @@ window.onload = function () {
 
 
 
-    // 计算总价
+    // 计算总价，包括浮层
     function getTotal() {
         var selected = 0;
         var price = 0;
@@ -38,7 +39,9 @@ window.onload = function () {
         for (var i = 0, len = tr.length; i < len; i++) {
             if (tr[i].getElementsByTagName("input")[0].checked) {
                 tr[i].className = 'on';
+                // 数目
                 selected += parseInt(tr[i].getElementsByTagName("input")[1].value);
+                // 价格
                 price += parseFloat(tr[i].cells[4].innerHTML);
                 HTMLstr += '<div><img src="' + tr[i].getElementsByTagName('img')[0].src + '"><span class="del" index="' + i + '">取消选择</span></div>'
             } else {
@@ -54,7 +57,7 @@ window.onload = function () {
         }
     }
 
-    // 小计
+    // 单行小计
     function getSubTotal(tr) {
         var tds = tr.cells;
         var price = parseFloat(tds[2].innerHTML);
@@ -63,6 +66,7 @@ window.onload = function () {
         tds[4].innerHTML = subTotal;
     }
 
+    // 全选 多选
     for (var i = 0, len = checkInputs.length; i < len; i++) {
         checkInputs[i].onclick = function () {
             if (this.className == "check-all check") {
@@ -93,6 +97,7 @@ window.onload = function () {
         }
     }
 
+    // 弹出层
     selected.onclick = function () {
         if (foot.className == "foot") {
             if (selectedTotal.innerHTML != 0) {
@@ -103,6 +108,7 @@ window.onload = function () {
         }
     }
 
+    // 弹出层上商品选择
     selectedViewList.onclick = function (e) {
         e = e || window.event;
         var el = e.target || e.srcElement;
@@ -114,6 +120,7 @@ window.onload = function () {
         }
     }
 
+    // 单行添加事件委托
     for (var i = 0; i < tr.length; i++) {
         tr[i].onclick = function (e) {
             e = e || window.event;
@@ -148,6 +155,8 @@ window.onload = function () {
             }
             getTotal();
         }
+
+        // 添加键盘事件
         tr[i].getElementsByTagName("input")[1].onkeyup = function () {
             var val = parseInt(this.value);
             var tr = this.parentNode.parentNode;
@@ -166,6 +175,7 @@ window.onload = function () {
         }
     }
 
+    // 删除事件
     deleteAll.onclick = function () {
         if (selectedTotal.innerHTML != "0") {
             var conf = confirm("确定要删除吗？");
@@ -174,6 +184,7 @@ window.onload = function () {
                     var input = tr[i].getElementsByTagName("input")[0];
                     if (input.checked) {
                         tr[i].parentNode.removeChild(tr[i]);
+                        // 回退下标，否则选择了两个的话 只能删除掉第一个
                         i--;
                     }
                 }
@@ -181,6 +192,7 @@ window.onload = function () {
         }
     }
 
+    // 进入页面的时候更新状态
     checkAllInputs[0].checked = true;
     checkAllInputs[0].onclick();
 }
